@@ -76,7 +76,7 @@ class Algo:
 
     def _complete(self, it: _State, level_id: int) -> bool:
         logging.info(f"_complete started level id:%d", level_id)
-        if it.rule_pos == it.rule:
+        if it.rule_pos == len(it.rule):
             non_terminal = it.rule[0]
             lvl = it.str_pos
             new_states = []
@@ -97,16 +97,14 @@ class Algo:
     def predict(self, _id: int) -> bool:
         logging.info(f"main predict started")
         changed = False
-        its = [i for i in self._levels[_id]]
-        for it in its:
+        for it in self._levels[_id]:
             changed |= self._predict(it, _id)
         return changed
 
     def complete(self, _id: int) -> bool:
         logging.info(f"main complete started")
         changed = False
-        its = [i for i in self._levels[_id]]
-        for it in its:
+        for it in self._levels[_id]:
             changed |= self._complete(it, _id)
         return changed
 
@@ -116,7 +114,7 @@ class Algo:
         @return True if there is
         @return False if there isn't
         """
-        self._levels = [set() for _ in range(len(word))]
+        self._levels = [set() for _ in range(len(word) + 2)]
         start_rule = '#->'
         start_rule += self._grammar.get_start()
         self._levels[0].add(self._State(start_rule, 3, 0))

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from random import random
+from random import randint
 from early_parser.algo import *
 
 
@@ -18,10 +18,10 @@ class AlgoTests(TestCase):
     def test_init(self):
         solver = Algo()
         for it in range(100):
-            l = 1 + int(random()) % 100
+            l = 1 + randint(0, 100)
             s = str()
             for i in range(l):
-                s = s + 'a' + str((int(random()) % 2))
+                s = s + chr(ord('a') + randint(0, 2))
             self.assertFalse(solver.has_word(s))
 
 
