@@ -57,21 +57,24 @@ class Algo:
 
     def _scan(self, it: _State, level_id: int, c: str) -> bool:
         logging.info(f"_scan started level id:%d, string :%s", level_id, c)
-        if is_symbol(c) and it.rule[it.rule_pos] == c:
-            prev_sz = len(self._levels[level_id + 1])
-            self._levels[level_id + 1].add(self._State(it.rule, it.rule_pos + 1, it.str_pos))
-            return len(self._levels[level_id + 1]) != prev_sz
+        # зачем длины правил сравнивать
+        if is_symbol(c) and len(it.rule) > it.rule_pos and it.rule[it.rule_pos] == c:
+                prev_sz = len(self._levels[level_id + 1])
+                self._levels[level_id + 1].add(self._State(it.rule, it.rule_pos + 1, it.str_pos))
+                return len(self._levels[level_id + 1]) != prev_sz
         return False
 
-    def _predict(self, it: _State, level_id: int) -> bool:
+    def _predict(self, _it: _State, level_id: int) -> bool:
         logging.info(f"_predict started level id:%d", level_id)
-        if it.rule_pos < len(it.rule) and is_non_terminal(it.rule[it.rule_pos]):
-            non_term = it.rule[it.rule_pos][0]
-            new_states = [it for it in self._grammar if it.rule[it.rule_pos][0] == non_term]
-            prev_sz = len(self._levels[level_id])
-            for state in new_states:
-                self._levels[level_id].add(state)
-            return len(self._levels) != prev_sz
+        if _it.rule_pos < len(_it.rule):
+            if is_non_terminal(_it.rule[_it.rule_pos]):
+                non_term = _it.rule[_it.rule_pos]
+                # nxt_it вроде надо
+                new_states = [self._State(it, 3, level_id) for it in self._grammar if it[0] == non_term]
+                prev_sz = len(self._levels[level_id])
+                for state in new_states:
+                    self._levels[level_id].add(state)
+                return len(self._levels[level_id]) != prev_sz
         return False
 
     def _complete(self, it: _State, level_id: int) -> bool:
@@ -97,14 +100,16 @@ class Algo:
     def predict(self, _id: int) -> bool:
         logging.info(f"main predict started")
         changed = False
-        for it in self._levels[_id]:
+        its = [i for i in self._levels[_id]]
+        for it in its:
             changed |= self._predict(it, _id)
         return changed
 
     def complete(self, _id: int) -> bool:
         logging.info(f"main complete started")
         changed = False
-        for it in self._levels[_id]:
+        its = [i for i in self._levels[_id]]
+        for it in its:
             changed |= self._complete(it, _id)
         return changed
 
@@ -114,7 +119,7 @@ class Algo:
         @return True if there is
         @return False if there isn't
         """
-        self._levels = [set() for _ in range(len(word) + 2)]
+        self._levels = [set() for _ in range(len(word) + 1)]
         start_rule = '#->'
         start_rule += self._grammar.get_start()
         self._levels[0].add(self._State(start_rule, 3, 0))
