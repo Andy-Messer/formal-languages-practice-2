@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "simple": {
+      "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+      "colored_formatter": "ColorizedArgsFormatter(format)"
+    }
+  },
+  "handlers": {
+    "file_handler": {
+      "class": "logging.FileHandler",
+      "level": "INFO",
+      "formatter": "simple",
+      "filename": "./logs.log",
+      "encoding": "utf8"
+    }
+  },
+  "root": {
+    "level": "INFO",
+    "handlers": [
+      "file_handler"
+    ]
+  }
+}
